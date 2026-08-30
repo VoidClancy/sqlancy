@@ -1,0 +1,99 @@
+package db
+
+import (
+	"database/sql"
+	"strings"
+
+	_ "modernc.org/sqlite"
+)
+
+type DB struct {
+	Conn   *sql.DB
+	Tables []string
+}
+
+type ColumnInfo struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
+func NewTestDB() *DB {
+	dbConn, err := sql.Open("sqlite", "file::memory:?cache=shared")
+	if err != nil {
+		panic(err)
+	}
+	return &DB{
+		Conn: dbConn,
+	}
+}
+
+func OpenDB(path string) (*DB, error) {
+	dbConn, err := sql.Open("sqlite", path)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := dbConn.Ping(); err != nil {
+		dbConn.Close()
+		return nil, err
+	}
+
+	database := &DB{
+		Conn: dbConn,
+	}
+
+	tables, err := database.GetTables()
+	if err != nil {
+		dbConn.Close()
+		return nil, err
+	}
+
+	database.Tables = tables
+	return database, nil
+}
+
+func (d *DB) GetTables() ([]string, error) {
+	if d == nil || d.Conn == nil {
+		return []string{}, nil
+	}
+
+	rows, err := d.Conn.Query(`
+		SELECT name
+		FROM sqlite_master
+		WHERE type = 'table'
+		  AND name NOT LIKE 'sqlite_%'
+		ORDER BY name
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	tables := make([]string, 0)
+
+	for rows.Next() {
+		var name string
+
+		if err := rows.Scan(&name); err != nil {
+			return nil, err
+		}
+
+		tables = append(tables, name)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return tables, nil
+}
+
+func (db *DB) Close() error {
+	if db == nil || db.Conn == nil {
+		return nil
+	}
+	return db.Conn.Close()
+}
+
+func quoteIdent(identifier string) string {
+	return `"` + strings.ReplaceAll(identifier, `"`, `""`) + `"`
+}
