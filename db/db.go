@@ -27,29 +27,27 @@ func NewTestDB() *DB {
 	}
 }
 
-func OpenDB(path string) (*DB, error) {
-	dbConn, err := sql.Open("sqlite", path)
+func (d *DB) OpenDB(path string) error {
+	if d.Conn != nil {
+		_ = d.Conn.Close()
+	}
+	conn, err := sql.Open("sqlite", path)
 	if err != nil {
-		return nil, err
+		return err
 	}
-
-	if err := dbConn.Ping(); err != nil {
-		dbConn.Close()
-		return nil, err
+	if err := conn.Ping(); err != nil {
+		conn.Close()
+		return err
 	}
-
-	database := &DB{
-		Conn: dbConn,
-	}
-
-	tables, err := database.GetTables()
+	d.Conn = conn
+	tables, err := d.GetTables()
 	if err != nil {
-		dbConn.Close()
-		return nil, err
+		d.Conn.Close()
+		d.Conn = nil
+		return err
 	}
-
-	database.Tables = tables
-	return database, nil
+	d.Tables = tables
+	return nil
 }
 
 func (d *DB) GetTables() ([]string, error) {

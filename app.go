@@ -12,12 +12,28 @@ import (
 )
 
 type App struct {
-	ctx context.Context
-	DB  *db.DB
+	ctx       context.Context
+	DB        *db.DB
+	RecentDBs []db.RecentDB
 }
 
 func NewApp() *App {
-	return &App{}
+	recents, _ := db.GetRecent()
+	return &App{
+		DB:        &db.DB{},
+		RecentDBs: recents,
+	}
+}
+
+func (a *App) startup(ctx context.Context) {
+	a.ctx = ctx
+}
+
+func (a *App) shutdown(ctx context.Context) {
+	_ = ctx
+	if a.dbConnected() {
+		_ = a.DB.Close()
+	}
 }
 
 func (a *App) dbConnected() bool {
@@ -25,18 +41,7 @@ func (a *App) dbConnected() bool {
 }
 
 func (a *App) OpenDB(path string) error {
-	opened, err := db.OpenDB(path)
-	if err != nil {
-		return err
-	}
-
-	if a.DB != nil && a.DB.Conn != nil {
-		a.DB.Conn.Close()
-	}
-
-	a.DB = opened
-
-	return nil
+	return a.DB.OpenDB(path)
 }
 
 func (a *App) Close() error {
@@ -121,4 +126,22 @@ func (a *App) SelectDbFile() (string, error) {
 	}
 	// cancelled -> empty string, no error
 	return selection, nil
+}
+
+func (a *App) GetRecentDBs() []db.RecentDB {
+	if a.RecentDBs == nil {
+		return []db.RecentDB{}
+	}
+	return a.RecentDBs
+}
+
+func (a *App) AddToRecent(name, path string) error {
+	if err := db.AddToRecent(name, path); err != nil {
+		return err
+	}
+	recents, err := db.GetRecent()
+	if err == nil {
+		a.RecentDBs = recents
+	}
+	return nil
 }

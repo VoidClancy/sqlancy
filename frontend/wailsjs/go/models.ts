@@ -56,6 +56,20 @@ export namespace db {
 		    return a;
 		}
 	}
+	export class RecentDB {
+	    name: string;
+	    path: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new RecentDB(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.path = source["path"];
+	    }
+	}
 	export class TableInfo {
 	    name: string;
 	    columns: ColumnInfo[];
