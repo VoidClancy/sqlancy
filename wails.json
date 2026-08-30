@@ -1,0 +1,12 @@
+{
+  "name": "sqlite-browser",
+  "outputfilename": "sqlite-browser",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "Clancy",
+    "email": "a7mdmo2mn@gmail.com"
+  }
+}

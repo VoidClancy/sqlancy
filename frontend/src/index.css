@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ===== Base Layout ===== */
+
+    --bg-main: #F7F8FA;
+    --bg-page: #FFFFFF;
+
+    /* ===== Elevated Elements ===== */
+
+    --bg-surface: #FFFFFF;
+    --bg-surface-elevated: #FFFFFF;
+    --bg-surface-overlay: #FFFFFF;
+
+    /* ===== Interaction ===== */
+
+    --action-accent: #7C3AED;
+    --action-accent-hover: #6D28D9;
+    --action-accent-active: #5B21B6;
+    --action-text: #FFFFFF;
+    --action-disabled: #E4E4E7;
+
+    /* ===== Semantic ===== */
+
+    --success-main: #16A34A;
+    --success-bg: #F0FDF4;
+
+    --warning-main: #D97706;
+    --warning-bg: #FFFBEB;
+
+    --error-main: #DC2626;
+    --error-bg: #FEF2F2;
+
+    --info-main: #2563EB;
+    --info-bg: #EFF6FF;
+
+    /* ===== Typography ===== */
+
+    --text-primary: #18181B;
+    --text-secondary: #52525B;
+    --text-3rd: #A1A1AA;
+    --text-disabled: #D4D4D8;
+
+    /* ===== Framing ===== */
+
+    --border-subtle: #E4E4E7;
+    --border-strong: #D4D4D8;
+  }
+
+  .dark {
+    /* ===== Base Layout ===== */
+
+    --bg-main: #09090B;
+    --bg-page: #111113;
+
+    /* ===== Elevated Elements ===== */
+
+    --bg-surface: #18181B;
+    --bg-surface-elevated: #27272A;
+    --bg-surface-overlay: #3F3F46;
+
+    /* ===== Interaction ===== */
+
+    --action-accent: #8B5CF6;
+    --action-accent-hover: #A78BFA;
+    --action-accent-active: #7C3AED;
+    --action-text: #FFFFFF;
+    --action-disabled: #27272A;
+
+    /* ===== Semantic ===== */
+
+    --success-main: #22C55E;
+    --success-bg: #102218;
+
+    --warning-main: #F59E0B;
+    --warning-bg: #241B0A;
+
+    --error-main: #F87171;
+    --error-bg: #251214;
+
+    --info-main: #60A5FA;
+    --info-bg: #101C30;
+
+    /* ===== Typography ===== */
+
+    --text-primary: #FAFAFA;
+    --text-secondary: #A1A1AA;
+    --text-3rd: #71717A;
+    --text-disabled: #52525B;
+
+    /* ===== Framing ===== */
+
+    --border-subtle: #27272A;
+    --border-strong: #3F3F46;
+  }
+
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+  }
+}
