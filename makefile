@@ -2,7 +2,7 @@
         build build-linux build-windows build-macos \
         build-windows-amd64 build-windows-arm64 \
         build-linux-amd64 build-linux-arm64 \
-        clean dev
+        clean dev test
 
 # ─────────────────────────────────────────────
 # Development
@@ -110,3 +110,6 @@ clean:
 
 lint:
 	cd frontend && npx tsc --noEmit
+
+test: 
+	go test -v ./...
