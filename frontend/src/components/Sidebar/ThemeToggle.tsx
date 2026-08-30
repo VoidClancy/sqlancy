@@ -1,5 +1,5 @@
 import { Moon, Sun } from "lucide-react";
-import { useLayout } from "../AppLayout";
+import { useLayout } from "../../context/AppLayout";
 
 export default function ThemeToggle() {
     const { isDark, toggleTheme, sidebarOpen } = useLayout();
@@ -9,7 +9,9 @@ export default function ThemeToggle() {
         <div className="shrink-0 border-t border-subtle p-2 flex justify-center">
             <button
                 onClick={toggleTheme}
-                aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+                aria-label={
+                    isDark ? "Switch to light mode" : "Switch to dark mode"
+                }
                 title={isDark ? "Switch to light mode" : "Switch to dark mode"}
                 className={`flex items-center gap-2.5 rounded-md px-2.5 py-1.5 w-full text-3rd hover:bg-main hover:text-primary transition-colors ${
                     collapsed ? "justify-center px-0" : ""

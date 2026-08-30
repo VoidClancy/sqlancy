@@ -1,12 +1,12 @@
 import { BrowserRouter } from "react-router-dom";
 import "./App.css";
-import AppLayout, { useLayout } from "./components/AppLayout";
+import AppLayout, { useLayout } from "./context/AppLayout";
 import Router from "./components/Router";
 import Sidebar from "./components/Sidebar/Sidebar";
-import { DbProvider } from "./components/DbContext";
+import { DbProvider } from "./context/DbContext";
 
 function AppShell() {
-    const { sidebarOpen, toggleSidebar } = useLayout();
+    const { sidebarOpen } = useLayout();
 
     return (
         <>

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useDb } from "../DbContext";
+import { useDb } from "../../context/DbContext";
 import { Loader2, Plus, FileText } from "lucide-react";
-import { useLayout } from "../AppLayout";
+import { useLayout } from "../../context/AppLayout";
 
 export default function ActionRow() {
     const navigate = useNavigate();
@@ -12,7 +12,7 @@ export default function ActionRow() {
     const handleOpenDB = async () => {
         try {
             const tbls = await openDatabase();
-            if (tbls === null) return; // User cancelled file picker -> preserve active DB & route
+            if (tbls === null) return;
 
             if (tbls.length > 0) {
                 navigate(`/tables/${tbls[0]}`);

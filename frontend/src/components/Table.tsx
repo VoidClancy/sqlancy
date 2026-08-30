@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { getTableInfo, getTableRows } from "./lib/db";
-import { db } from "../../wailsjs/go/models";
+import { getTableInfo, getTableRows, TableInfo, ColumnInfo } from "../lib";
 import {
     Table2,
     RefreshCw,
@@ -17,8 +16,8 @@ import {
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface TableState {
-    tableInfo: db.TableInfo | null;
-    columns: db.ColumnInfo[];
+    tableInfo: TableInfo | null;
+    columns: ColumnInfo[];
     rows: any[][];
     nextCursor: Record<string, any> | null;
     hasMore: boolean;
@@ -125,8 +124,8 @@ function useTableData(tableName: string) {
 
 interface TableHeaderProps {
     tableName: string;
-    tableInfo: db.TableInfo | null;
-    columns: db.ColumnInfo[];
+    tableInfo: TableInfo | null;
+    columns: ColumnInfo[];
     rows: any[][];
     loading: boolean;
     searchTerm: string;
@@ -215,7 +214,7 @@ function TableHeader({
 // ─── DataTable ────────────────────────────────────────────────────────────────
 
 interface DataTableProps {
-    columns: db.ColumnInfo[];
+    columns: ColumnInfo[];
     filteredRows: any[][];
     pkSet: Set<string>;
     searchTerm: string;
