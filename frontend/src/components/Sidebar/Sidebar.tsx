@@ -1,8 +1,8 @@
-import ThemeToggle from "./ThemeToggle";
-import SidebarTables from "./SidebarTables";
-import ActionRow from "./ActionRow";
-import SidebarHeader from "./Header";
-import RecentDBs from "./RecentDBs";
+import ThemeToggle from "./components/ThemeToggle";
+import SidebarTables from "./components/SidebarTables";
+import ActionRow from "./components/ActionRow";
+import SidebarHeader from "./components/Header";
+import RecentDBs from "./components/RecentDBs";
 import { useLayout } from "../../context/AppLayout";
 
 export default function Sidebar() {

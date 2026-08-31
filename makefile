@@ -97,6 +97,7 @@ build-macos-arm64: frontend
 # ─────────────────────────────────────────────
 
 build: build-linux
+	sudo cp ./build/bin/sqlancy /usr/local/bin/sqlancy
 
 
 # ─────────────────────────────────────────────

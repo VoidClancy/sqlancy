@@ -1,8 +1,8 @@
 import { ChevronDown, Table2, Search } from "lucide-react";
 import { useState, useMemo } from "react";
-import { useDbStore } from "../../store/useDbStore";
+import { useDbStore } from "../../../store/useDbStore";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useLayout } from "../../context/AppLayout";
+import { useLayout } from "../../../context/AppLayout";
 
 export default function SidebarTables() {
     const [tablesOpen, setTablesOpen] = useState(true);

@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"sqlite-browser/db"
 	"strings"
+
+	"github.com/voidclancy/sqlancy/db"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	_ "modernc.org/sqlite"

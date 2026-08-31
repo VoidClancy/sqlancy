@@ -1,7 +1,7 @@
 import { ChevronDown, Database } from "lucide-react";
 import { useState } from "react";
-import { useLayout } from "../../context/AppLayout";
-import { useDbStore } from "../../store/useDbStore";
+import { useLayout } from "../../../context/AppLayout";
+import { useDbStore } from "../../../store/useDbStore";
 import { useNavigate } from "react-router-dom";
 
 export default function RecentDBs() {

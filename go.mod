@@ -1,4 +1,4 @@
-module sqlite-browser
+module github.com/voidclancy/sqlancy
 
 go 1.25.0
 

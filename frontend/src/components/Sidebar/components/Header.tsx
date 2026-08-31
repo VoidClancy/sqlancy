@@ -1,4 +1,4 @@
-import { useLayout } from "../../context/AppLayout";
+import { useLayout } from "../../../context/AppLayout";
 import { Database, ChevronLeft } from "lucide-react";
 
 export default function SidebarHeader() {

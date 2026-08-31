@@ -3,9 +3,10 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"sqlite-browser/utils"
 	"strings"
 	"time"
+
+	"github.com/voidclancy/sqlancy/utils"
 )
 
 type QueryResult struct {

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useDbStore } from "../../store/useDbStore";
+import { useDbStore } from "../../../store/useDbStore";
 import { Loader2, Plus, FileText } from "lucide-react";
-import { useLayout } from "../../context/AppLayout";
+import { useLayout } from "../../../context/AppLayout";
 
 export default function ActionRow() {
     const navigate = useNavigate();

@@ -133,6 +133,8 @@ interface TableHeaderProps {
     onRefresh: () => void;
 }
 
+const logicalOperators: string[] = ["IN", "="];
+
 function TableHeader({
     tableName,
     tableInfo,
@@ -182,6 +184,22 @@ function TableHeader({
             </div>
 
             <div className="flex items-center gap-2">
+                <div className="relative flex items-center justify-center gap-2">
+                    <p>where</p>
+
+                    <select>
+                        {columns.map((c) => {
+                            return <option>{c.name}</option>;
+                        })}
+                    </select>
+                    <select>
+                        {logicalOperators.map((op) => {
+                            return <option>{op}</option>;
+                        })}
+                    </select>
+                    <input type="text" />
+                    <button>Filter</button>
+                </div>
                 <div className="relative">
                     <Search
                         size={14}

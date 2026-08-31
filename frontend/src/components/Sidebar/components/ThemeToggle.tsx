@@ -1,5 +1,5 @@
 import { Moon, Sun } from "lucide-react";
-import { useLayout } from "../../context/AppLayout";
+import { useLayout } from "../../../context/AppLayout";
 
 export default function ThemeToggle() {
     const { isDark, toggleTheme, sidebarOpen } = useLayout();
