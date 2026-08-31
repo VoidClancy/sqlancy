@@ -5,11 +5,23 @@ import {
     GetTableInfo,
     GetTableRows,
 } from "../../wailsjs/go/main/App";
+import { db } from "../../wailsjs/go/models";
 import { TableInfo, TableRows } from "./types";
 
-export const selectDbFile = (): Promise<string> => SelectDbFile();
+const isWailsAvailable = (): boolean => {
+    return (
+        typeof window !== "undefined" &&
+        Boolean((window as any).go?.main?.App)
+    );
+};
+
+export const selectDbFile = async (): Promise<string> => {
+    if (!isWailsAvailable()) return "";
+    return await SelectDbFile();
+};
 
 export const selectDbDir = async (): Promise<string> => {
+    if (!isWailsAvailable()) return "";
     const filePath = await SelectDbFile();
     if (!filePath) return "";
     const idxSlash = filePath.lastIndexOf("/");
@@ -18,15 +30,42 @@ export const selectDbDir = async (): Promise<string> => {
     return idx > 0 ? filePath.substring(0, idx) : filePath;
 };
 
-export const openDB = (path: string): Promise<void> => OpenDB(path);
+export const openDB = async (path: string): Promise<void> => {
+    if (!isWailsAvailable()) {
+        throw new Error("Wails desktop runtime is not connected.");
+    }
+    return await OpenDB(path);
+};
 
-export const getTables = (): Promise<string[]> => GetTables();
+export const getTables = async (): Promise<string[]> => {
+    if (!isWailsAvailable()) return [];
+    return await GetTables();
+};
 
-export const getTableInfo = (tableName: string): Promise<TableInfo> =>
-    GetTableInfo(tableName);
+export const getTableInfo = async (tableName: string): Promise<TableInfo> => {
+    if (!isWailsAvailable()) {
+        return db.TableInfo.createFrom({
+            name: tableName,
+            columns: [],
+            primaryKey: [],
+            withoutRowID: false,
+        });
+    }
+    return await GetTableInfo(tableName);
+};
 
-export const getTableRows = (
+export const getTableRows = async (
     tableName: string,
     cursor: Record<string, any> | null,
     limit: number,
-): Promise<TableRows> => GetTableRows(tableName, cursor || {}, limit);
+): Promise<TableRows> => {
+    if (!isWailsAvailable()) {
+        return db.TableRows.createFrom({
+            columns: [],
+            rows: [],
+            nextCursor: {},
+            hasMore: false,
+        });
+    }
+    return await GetTableRows(tableName, cursor || {}, limit);
+};

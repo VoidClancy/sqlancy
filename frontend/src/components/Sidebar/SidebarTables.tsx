@@ -1,6 +1,6 @@
 import { ChevronDown, Table2, Search } from "lucide-react";
 import { useState, useMemo } from "react";
-import { useDb } from "../../context/DbContext";
+import { useDbStore } from "../../store/useDbStore";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLayout } from "../../context/AppLayout";
 
@@ -12,7 +12,7 @@ export default function SidebarTables() {
     const location = useLocation();
     const { sidebarOpen, toggleSidebar } = useLayout();
     const collapsed = !sidebarOpen;
-    const { tables, loading } = useDb();
+    const { tables, loading } = useDbStore();
 
     const filteredTables = useMemo(() => {
         if (!searchFilter.trim()) return tables;

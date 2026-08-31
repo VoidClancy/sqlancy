@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useDb } from "../../context/DbContext";
+import { useDbStore } from "../../store/useDbStore";
 import { Loader2, Plus, FileText } from "lucide-react";
 import { useLayout } from "../../context/AppLayout";
 
@@ -7,7 +7,7 @@ export default function ActionRow() {
     const navigate = useNavigate();
     const { sidebarOpen } = useLayout();
     const collapsed = !sidebarOpen;
-    const { openDatabase, loading } = useDb();
+    const { openDatabase, loading } = useDbStore();
 
     const handleOpenDB = async () => {
         try {

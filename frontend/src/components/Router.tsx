@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Table from "./Table";
 import HomeView from "./Home";
-import QueryEditorView from "./QueryEditor";
+import QueryEditorView from "./QueryEditor/QueryEditor";
 
 export default function Router() {
     return (

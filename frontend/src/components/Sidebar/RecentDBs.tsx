@@ -1,12 +1,12 @@
 import { ChevronDown, Database } from "lucide-react";
 import { useState } from "react";
 import { useLayout } from "../../context/AppLayout";
-import { useDb } from "../../context/DbContext";
+import { useDbStore } from "../../store/useDbStore";
 import { useNavigate } from "react-router-dom";
 
 export default function RecentDBs() {
     const [open, setOpen] = useState(true);
-    const { recentDBs, dbPath, openDatabase } = useDb();
+    const { recentDBs, dbPath, openDatabase } = useDbStore();
     const { sidebarOpen, toggleSidebar } = useLayout();
     const collapsed = !sidebarOpen;
     const navigate = useNavigate();

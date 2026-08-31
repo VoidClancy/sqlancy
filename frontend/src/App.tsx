@@ -3,7 +3,6 @@ import "./App.css";
 import AppLayout, { useLayout } from "./context/AppLayout";
 import Router from "./components/Router";
 import Sidebar from "./components/Sidebar/Sidebar";
-import { DbProvider } from "./context/DbContext";
 
 function AppShell() {
     const { sidebarOpen } = useLayout();
@@ -28,11 +27,9 @@ function AppShell() {
 export default function App() {
     return (
         <BrowserRouter>
-            <DbProvider>
-                <AppLayout>
-                    <AppShell />
-                </AppLayout>
-            </DbProvider>
+            <AppLayout>
+                <AppShell />
+            </AppLayout>
         </BrowserRouter>
     );
 }

@@ -1,6 +1,6 @@
 import { Loader2, FolderOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useDb } from "../context/DbContext";
+import { useDbStore } from "../store/useDbStore";
 
 const CAPABILITIES = [
     "cursor pagination",
@@ -13,7 +13,7 @@ const CAPABILITIES = [
 
 export default function HomeView() {
     const navigate = useNavigate();
-    const { openDatabase, loading } = useDb();
+    const { openDatabase, loading } = useDbStore();
 
     const handleOpenDB = async () => {
         try {
