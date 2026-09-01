@@ -52,3 +52,24 @@ func AddToRecent(name, path string) error {
 
 	return os.WriteFile(recentFile, data, 0644)
 }
+
+func RemoveFromRecent(path string) error {
+	recent, err := GetRecent()
+	if err != nil {
+		return err
+	}
+
+	filtered := make([]RecentDB, 0, len(recent))
+	for _, r := range recent {
+		if r.Path != path {
+			filtered = append(filtered, r)
+		}
+	}
+
+	data, err := json.Marshal(filtered)
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(recentFile, data, 0644)
+}

@@ -2,6 +2,8 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
+	"os"
 	"strings"
 
 	_ "modernc.org/sqlite"
@@ -28,6 +30,19 @@ func NewTestDB() *DB {
 }
 
 func (d *DB) OpenDB(path string) error {
+	if path != ":memory:" && !strings.HasPrefix(path, "file::memory:") {
+		info, err := os.Stat(path)
+		if err != nil {
+			if os.IsNotExist(err) {
+				return fmt.Errorf("database file does not exist at path: %s", path)
+			}
+			return fmt.Errorf("cannot access database file: %w", err)
+		}
+		if info.IsDir() {
+			return fmt.Errorf("path is a directory, not a database file: %s", path)
+		}
+	}
+
 	if d.Conn != nil {
 		_ = d.Conn.Close()
 	}
