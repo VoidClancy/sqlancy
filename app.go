@@ -82,7 +82,14 @@ func (a *App) GetTableRows(tableName string, cursor db.Cursor, limit int) (*db.T
 	if !a.dbConnected() {
 		return nil, fmt.Errorf("no database opened")
 	}
-	return a.DB.GetTableRows(tableName, cursor, limit)
+	return a.DB.GetTableRows(tableName, cursor, limit, nil)
+}
+
+func (a *App) GetFilteredTableRows(tableName string, cursor db.Cursor, limit int, filter db.Filter) (*db.TableRows, error) {
+	if !a.dbConnected() {
+		return nil, fmt.Errorf("no database opened")
+	}
+	return a.DB.GetFilteredTableRows(tableName, cursor, limit, filter)
 }
 
 func (a *App) ExecuteQuery(query string) (*db.QueryResult, error) {
@@ -138,6 +145,17 @@ func (a *App) GetRecentDBs() []db.RecentDB {
 
 func (a *App) AddToRecent(name, path string) error {
 	if err := db.AddToRecent(name, path); err != nil {
+		return err
+	}
+	recents, err := db.GetRecent()
+	if err == nil {
+		a.RecentDBs = recents
+	}
+	return nil
+}
+
+func (a *App) RemoveFromRecent(path string) error {
+	if err := db.RemoveFromRecent(path); err != nil {
 		return err
 	}
 	recents, err := db.GetRecent()

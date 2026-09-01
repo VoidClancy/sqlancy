@@ -24,6 +24,12 @@ type TableRows struct {
 	HasMore    bool         `json:"hasMore"`
 }
 
+type Filter struct {
+	Column   string `json:"column"`
+	Operator string `json:"operator"`
+	Value    any    `json:"value"`
+}
+
 func (db *DB) GetTableInfo(tableName string) (*TableInfo, error) {
 	table := &TableInfo{
 		Name: tableName,
@@ -155,7 +161,7 @@ func (db *DB) isWithoutRowID(tableName string) (bool, error) {
 	), nil
 }
 
-func (db *DB) GetTableRows(tableName string, cursor Cursor, limit int) (*TableRows, error) {
+func (db *DB) GetTableRows(tableName string, cursor Cursor, limit int, filter *Filter) (*TableRows, error) {
 	if limit <= 0 {
 		limit = 100
 	}
@@ -228,6 +234,19 @@ func (db *DB) GetTableRows(tableName string, cursor Cursor, limit int) (*TableRo
 				}
 			}
 		}
+	}
+
+	filterClause, filterArgs, err := buildFilterClause(filter)
+	if err != nil {
+		return nil, err
+	}
+	if filterClause != "" {
+		if whereClause == "" {
+			whereClause = "WHERE " + filterClause
+		} else {
+			whereClause = whereClause + " AND " + filterClause
+		}
+		args = append(args, filterArgs...)
 	}
 
 	query := fmt.Sprintf(`
@@ -315,4 +334,70 @@ func (db *DB) GetTableRows(tableName string, cursor Cursor, limit int) (*TableRo
 	}
 
 	return result, nil
+}
+func buildFilterClause(f *Filter) (string, []any, error) {
+	if f == nil {
+		return "", nil, nil
+	}
+	if f.Column == "" {
+		return "", nil, fmt.Errorf("filter column must not be empty")
+	}
+
+	col := quoteIdent(f.Column)
+	op := strings.ToUpper(f.Operator)
+
+	switch op {
+	case "=", "!=", "<>", ">", ">=", "<", "<=":
+		return fmt.Sprintf("%s %s ?", col, op), []any{f.Value}, nil
+
+	case "LIKE", "NOT LIKE":
+		valStr := fmt.Sprintf("%v", f.Value)
+		if !strings.Contains(valStr, "%") {
+			valStr = "%" + valStr + "%"
+		}
+		return fmt.Sprintf("%s %s ?", col, op), []any{valStr}, nil
+
+	case "IS NULL":
+		return fmt.Sprintf("%s IS NULL", col), nil, nil
+
+	case "IS NOT NULL":
+		return fmt.Sprintf("%s IS NOT NULL", col), nil, nil
+
+	case "IN", "NOT IN":
+		var vals []any
+		switch v := f.Value.(type) {
+		case []any:
+			vals = v
+		case []string:
+			for _, item := range v {
+				vals = append(vals, item)
+			}
+		case string:
+			parts := strings.Split(v, ",")
+			for _, p := range parts {
+				trimmed := strings.TrimSpace(p)
+				if trimmed != "" {
+					vals = append(vals, trimmed)
+				}
+			}
+		}
+
+		if len(vals) == 0 {
+			return "", nil, fmt.Errorf("filter operator %q requires a non-empty list of values", f.Operator)
+		}
+		placeholders := strings.Repeat("?,", len(vals))
+		placeholders = placeholders[:len(placeholders)-1] // trim trailing comma
+		return fmt.Sprintf("%s %s (%s)", col, op, placeholders), vals, nil
+
+	default:
+		return "", nil, fmt.Errorf("unsupported filter operator %q", f.Operator)
+	}
+}
+func (db *DB) GetFilteredTableRows(
+	tableName string,
+	cursor Cursor,
+	limit int,
+	filter Filter,
+) (*TableRows, error) {
+	return db.GetTableRows(tableName, cursor, limit, &filter)
 }

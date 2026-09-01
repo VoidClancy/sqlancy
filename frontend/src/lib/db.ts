@@ -4,14 +4,14 @@ import {
     SelectDbFile,
     GetTableInfo,
     GetTableRows,
+    GetFilteredTableRows,
 } from "../../wailsjs/go/main/App";
 import { db } from "../../wailsjs/go/models";
-import { TableInfo, TableRows } from "./types";
+import { Filter, TableInfo, TableRows } from "./types";
 
 const isWailsAvailable = (): boolean => {
     return (
-        typeof window !== "undefined" &&
-        Boolean((window as any).go?.main?.App)
+        typeof window !== "undefined" && Boolean((window as any).go?.main?.App)
     );
 };
 
@@ -58,6 +58,7 @@ export const getTableRows = async (
     tableName: string,
     cursor: Record<string, any> | null,
     limit: number,
+    filter?: Filter,
 ): Promise<TableRows> => {
     if (!isWailsAvailable()) {
         return db.TableRows.createFrom({
@@ -67,5 +68,15 @@ export const getTableRows = async (
             hasMore: false,
         });
     }
+
+    if (filter && filter.column) {
+        return await GetFilteredTableRows(
+            tableName,
+            cursor || {},
+            limit,
+            filter,
+        );
+    }
+
     return await GetTableRows(tableName, cursor || {}, limit);
 };

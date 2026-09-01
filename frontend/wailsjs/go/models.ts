@@ -14,6 +14,22 @@ export namespace db {
 	        this.type = source["type"];
 	    }
 	}
+	export class Filter {
+	    column: string;
+	    operator: string;
+	    value: any;
+	
+	    static createFrom(source: any = {}) {
+	        return new Filter(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.column = source["column"];
+	        this.operator = source["operator"];
+	        this.value = source["value"];
+	    }
+	}
 	export class QueryResult {
 	    columns: ColumnInfo[];
 	    rows: any[][];

@@ -210,7 +210,7 @@ func TestPaginationNoPK(t *testing.T) {
 	var cursor Cursor
 
 	for page := 0; ; page++ {
-		res, err := d.GetTableRows("logs", cursor, 2)
+		res, err := d.GetTableRows("logs", cursor, 2, nil)
 		if err != nil {
 			t.Fatalf("page %d: %v", page, err)
 		}
@@ -252,7 +252,7 @@ func TestPaginationSinglePK(t *testing.T) {
 	var cursor Cursor
 
 	for page := 0; ; page++ {
-		res, err := d.GetTableRows("users", cursor, 2)
+		res, err := d.GetTableRows("users", cursor, 2, nil)
 		if err != nil {
 			t.Fatalf("page %d: %v", page, err)
 		}
@@ -280,7 +280,7 @@ func TestPaginationCompositePK(t *testing.T) {
 	var cursor Cursor
 
 	for page := 0; ; page++ {
-		res, err := d.GetTableRows("order_items", cursor, 2)
+		res, err := d.GetTableRows("order_items", cursor, 2, nil)
 		if err != nil {
 			t.Fatalf("page %d: %v", page, err)
 		}
@@ -310,7 +310,7 @@ func TestPaginationCompositePK(t *testing.T) {
 func TestPaginationWithoutRowID(t *testing.T) {
 	d := testDB(t)
 
-	p1, err := d.GetTableRows("inventory", nil, 2)
+	p1, err := d.GetTableRows("inventory", nil, 2, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -318,7 +318,7 @@ func TestPaginationWithoutRowID(t *testing.T) {
 		t.Fatalf("p1: got %d rows, hasMore=%v", len(p1.Rows), p1.HasMore)
 	}
 
-	p2, err := d.GetTableRows("inventory", p1.NextCursor, 2)
+	p2, err := d.GetTableRows("inventory", p1.NextCursor, 2, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -332,7 +332,7 @@ func TestPaginationWithoutRowID(t *testing.T) {
 func TestPaginationEmptyTable(t *testing.T) {
 	d := testDB(t)
 
-	res, err := d.GetTableRows("empty_tbl", nil, 50)
+	res, err := d.GetTableRows("empty_tbl", nil, 50, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -350,7 +350,7 @@ func TestPaginationEmptyTable(t *testing.T) {
 func TestPaginationSingleRow(t *testing.T) {
 	d := testDB(t)
 
-	res, err := d.GetTableRows("solo", nil, 10)
+	res, err := d.GetTableRows("solo", nil, 10, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -366,7 +366,7 @@ func TestPaginationLimitExactMatch(t *testing.T) {
 	d := testDB(t)
 
 	// 5 rows with limit=5 → no HasMore
-	res, err := d.GetTableRows("logs", nil, 5)
+	res, err := d.GetTableRows("logs", nil, 5, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -382,7 +382,7 @@ func TestPaginationDefaultLimit(t *testing.T) {
 	d := testDB(t)
 
 	// limit <= 0 should default to 100
-	res, err := d.GetTableRows("logs", nil, 0)
+	res, err := d.GetTableRows("logs", nil, 0, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -395,11 +395,11 @@ func TestPaginationNilCursorIgnored(t *testing.T) {
 	d := testDB(t)
 
 	// nil cursor and cursor with nil value should both start from beginning
-	r1, err := d.GetTableRows("users", nil, 10)
+	r1, err := d.GetTableRows("users", nil, 10, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	r2, err := d.GetTableRows("users", Cursor{"id": nil}, 10)
+	r2, err := d.GetTableRows("users", Cursor{"id": nil}, 10, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -412,7 +412,7 @@ func TestPaginationSpecialColumnNames(t *testing.T) {
 	d := testDB(t)
 
 	// table with reserved-word columns still paginates with rowid fallback
-	res, err := d.GetTableRows("weird cols", nil, 10)
+	res, err := d.GetTableRows("weird cols", nil, 10, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -426,7 +426,7 @@ func TestPaginationSpecialColumnNames(t *testing.T) {
 func TestPaginationNullValues(t *testing.T) {
 	d := testDB(t)
 
-	res, err := d.GetTableRows("mixed", nil, 10)
+	res, err := d.GetTableRows("mixed", nil, 10, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

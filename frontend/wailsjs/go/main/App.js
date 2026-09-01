@@ -14,6 +14,10 @@ export function ExecuteQuery(arg1) {
   return window['go']['main']['App']['ExecuteQuery'](arg1);
 }
 
+export function GetFilteredTableRows(arg1, arg2, arg3, arg4) {
+  return window['go']['main']['App']['GetFilteredTableRows'](arg1, arg2, arg3, arg4);
+}
+
 export function GetRecentDBs() {
   return window['go']['main']['App']['GetRecentDBs']();
 }
@@ -36,6 +40,10 @@ export function Greet(arg1) {
 
 export function OpenDB(arg1) {
   return window['go']['main']['App']['OpenDB'](arg1);
+}
+
+export function RemoveFromRecent(arg1) {
+  return window['go']['main']['App']['RemoveFromRecent'](arg1);
 }
 
 export function SelectDbFile() {

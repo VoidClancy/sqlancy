@@ -8,6 +8,8 @@ export function Close():Promise<void>;
 
 export function ExecuteQuery(arg1:string):Promise<db.QueryResult>;
 
+export function GetFilteredTableRows(arg1:string,arg2:db.Cursor,arg3:number,arg4:db.Filter):Promise<db.TableRows>;
+
 export function GetRecentDBs():Promise<Array<db.RecentDB>>;
 
 export function GetTableInfo(arg1:string):Promise<db.TableInfo>;
@@ -19,5 +21,7 @@ export function GetTables():Promise<Array<string>>;
 export function Greet(arg1:string):Promise<string>;
 
 export function OpenDB(arg1:string):Promise<void>;
+
+export function RemoveFromRecent(arg1:string):Promise<void>;
 
 export function SelectDbFile():Promise<string>;
