@@ -5,6 +5,7 @@ import React, {
     useCallback,
     useEffect,
 } from "react";
+import { Toaster } from "react-hot-toast";
 
 export type LayoutContextValue = {
     sidebarOpen: boolean;
@@ -59,8 +60,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 toggleTheme,
             }}
         >
-            <div className="h-screen flex overflow-hidden bg-main text-primary antialiased">
+            <div className="h-screen flex overflow-hidden bg-main text-primary antialiased relative">
                 {children}
+                <Toaster position="bottom-right" reverseOrder={false} />
             </div>
         </LayoutContext.Provider>
     );

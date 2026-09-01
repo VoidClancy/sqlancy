@@ -4,20 +4,25 @@ import {
     openDB,
     getTables,
     addToRecent,
+    removeFromRecent,
     getRecentDBs,
     RecentDB,
 } from "../lib";
+import { showToast } from "../components/shared/CustomToast";
 
 interface DbState {
     dbPath: string | null;
     tables: string[];
     recentDBs: RecentDB[];
     loading: boolean;
+    error: string | null;
 
     // Actions
     openDatabase: (filePath?: string) => Promise<string[] | null>;
+    removeRecentDB: (filePath: string) => Promise<void>;
     refreshTables: () => Promise<string[]>;
     refreshRecentDBs: () => Promise<RecentDB[]>;
+    clearError: () => void;
 }
 
 export const useDbStore = create<DbState>((set, get) => ({
@@ -25,6 +30,9 @@ export const useDbStore = create<DbState>((set, get) => ({
     tables: [],
     recentDBs: [],
     loading: false,
+    error: null,
+
+    clearError: () => set({ error: null }),
 
     refreshTables: async () => {
         try {
@@ -32,7 +40,7 @@ export const useDbStore = create<DbState>((set, get) => ({
             const list = tbls || [];
             set({ tables: list });
             return list;
-        } catch (err) {
+        } catch (err: any) {
             console.error("Failed to fetch tables:", err);
             set({ tables: [] });
             return [];
@@ -45,15 +53,26 @@ export const useDbStore = create<DbState>((set, get) => ({
             const recent = list || [];
             set({ recentDBs: recent });
             return recent;
-        } catch (err) {
+        } catch (err: any) {
             console.error("Failed to fetch recent DBs:", err);
             set({ recentDBs: [] });
             return [];
         }
     },
 
+    removeRecentDB: async (filePath: string) => {
+        try {
+            await removeFromRecent(filePath);
+            await get().refreshRecentDBs();
+            showToast.info(`Removed "${filePath.split(/[\\/]/).pop()}" from recent DBs`);
+        } catch (err: any) {
+            const msg = err?.message || String(err);
+            showToast.error(msg, "Failed to Remove Recent DB");
+        }
+    },
+
     openDatabase: async (filePath?: string) => {
-        set({ loading: true });
+        set({ loading: true, error: null });
         try {
             let targetPath = filePath;
             if (!targetPath) {
@@ -73,9 +92,11 @@ export const useDbStore = create<DbState>((set, get) => ({
             const tbls = await get().refreshTables();
             set({ loading: false });
             return tbls;
-        } catch (err) {
+        } catch (err: any) {
+            const msg = err?.message || String(err);
             console.error("Failed to open database:", err);
-            set({ loading: false });
+            showToast.error(msg, "Failed to Open Database");
+            set({ loading: false, error: msg });
             throw err;
         }
     },
