@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import Table from "./Table";
+import Table from "./Table/Table";
 import HomeView from "./Home";
 import QueryEditorView from "./QueryEditor/QueryEditor";
 

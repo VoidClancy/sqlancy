@@ -95,7 +95,7 @@ export default function SidebarTables() {
                                             to={`/tables/${t}`}
                                             className={`flex items-center gap-2 w-full rounded px-2.5 py-1.5 text-left text-[12.5px] transition-colors truncate ${
                                                 isActive
-                                                    ? "bg-action-accent/15 text-action font-semibold"
+                                                    ? "bg-action-accent/15 text-primary font-semibold"
                                                     : "text-secondary hover:bg-main hover:text-primary"
                                             }`}
                                         >
@@ -103,7 +103,7 @@ export default function SidebarTables() {
                                                 size={13}
                                                 className={
                                                     isActive
-                                                        ? "text-action shrink-0"
+                                                        ? "text-primary shrink-0"
                                                         : "text-3rd shrink-0"
                                                 }
                                             />
