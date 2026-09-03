@@ -1,0 +1,230 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-linux:
+    name: Build Linux & .deb
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev build-essential
+
+      - name: Install Wails
+        run: |
+          go install github.com/wailsapp/wails/v2/cmd/wails@latest
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+
+      - name: Propagate icons from master
+        run: |
+          echo "master: build/appicon.png"
+          ls -lh build/appicon.png || echo "missing master icon"
+          rm -f build/windows/icon.ico build/darwin/iconfile.icns build/darwin/iconfile.png
+          echo "cleared derived icons — next build will regenerate from master"
+
+      - name: Build Linux binary
+        run: wails build -platform linux/amd64 -tags webkit2_40 -clean
+
+      - name: Create .deb package
+        run: |
+          set -e
+          # tag = v1.2.3 -> 1.2.3 ; fallback for manual dispatch
+          VERSION="${GITHUB_REF_NAME:-v0.0.0}"
+          [[ "$VERSION" == v* ]] || VERSION="v0.0.0"
+          VERSION_NUM="${VERSION#v}"
+
+          echo "Building .deb for version $VERSION_NUM"
+
+          rm -rf deb-package
+          mkdir -p deb-package/DEBIAN
+          mkdir -p deb-package/usr/bin
+          mkdir -p deb-package/usr/share/applications
+          mkdir -p deb-package/usr/share/icons/hicolor/512x512/apps
+          mkdir -p deb-package/usr/share/icons/hicolor/256x256/apps
+          mkdir -p deb-package/usr/share/pixmaps
+
+          cp build/bin/sqlancy deb-package/usr/bin/sqlancy
+          chmod +x deb-package/usr/bin/sqlancy
+
+          # Icon: prefer build/appicon.png (1024x1024 master), fallback to any png
+          ICON_SRC=""
+          if [ -f build/appicon.png ]; then
+            ICON_SRC="build/appicon.png"
+          elif [ -f build/bin/appicon.png ]; then
+            ICON_SRC="build/bin/appicon.png"
+          fi
+
+          if [ -n "$ICON_SRC" ]; then
+            cp "$ICON_SRC" deb-package/usr/share/pixmaps/sqlancy.png
+            cp "$ICON_SRC" deb-package/usr/share/icons/hicolor/512x512/apps/sqlancy.png
+            cp "$ICON_SRC" deb-package/usr/share/icons/hicolor/256x256/apps/sqlancy.png
+          fi
+
+          cat > deb-package/DEBIAN/control <<EOF
+          Package: sqlancy
+          Version: ${VERSION_NUM}
+          Section: utils
+          Priority: optional
+          Architecture: amd64
+          Maintainer: Clancy <a7mdmo2mn@gmail.com>
+          Depends: libgtk-3-0, libwebkit2gtk-4.0-37 | libwebkit2gtk-4.1-0
+          Description: High performance modern SQLite Browser built with Wails, Go, and React.
+           Fast, lightweight SQLite GUI for browsing, querying and managing databases.
+          EOF
+
+          cat > deb-package/usr/share/applications/sqlancy.desktop <<'EOF'
+          [Desktop Entry]
+          Name=SQLancy
+          Comment=SQLite Browser & Management GUI
+          Exec=/usr/bin/sqlancy
+          Icon=sqlancy
+          Terminal=false
+          Type=Application
+          Categories=Development;Database;
+          StartupWMClass=sqlancy
+          EOF
+
+          dpkg-deb --build deb-package "sqlancy_${VERSION_NUM}_amd64.deb"
+          ls -lh *.deb
+
+      - name: Create Linux tarball
+        run: tar -czvf sqlancy-linux-amd64.tar.gz -C build/bin sqlancy
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-artifacts
+          path: |
+            *.deb
+            sqlancy-linux-amd64.tar.gz
+          if-no-files-found: error
+
+  build-windows:
+    name: Build Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Wails
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+        shell: pwsh
+
+      - name: Propagate icons from master
+        run: |
+          Write-Host "master: build/appicon.png"
+          if (Test-Path build/appicon.png) { Get-Item build/appicon.png | Format-List }
+          Remove-Item -Force build/windows/icon.ico, build/darwin/iconfile.icns -ErrorAction SilentlyContinue
+          Write-Host "cleared derived icons — next build will regenerate from master"
+        shell: pwsh
+
+      - name: Build Windows binary
+        run: |
+          $env:PATH += ";$(go env GOPATH)\bin"
+          wails build -platform windows/amd64 -clean
+          ls build/bin/
+        shell: pwsh
+
+      - name: Prepare Windows artifacts
+        run: |
+          Copy-Item build/bin/sqlancy.exe ./sqlancy-windows-amd64.exe -Force
+          ls *.exe
+        shell: pwsh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-artifacts
+          path: sqlancy-windows-amd64.exe
+
+  build-macos:
+    name: Build macOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Wails
+        run: |
+          go install github.com/wailsapp/wails/v2/cmd/wails@latest
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+
+      - name: Propagate icons from master
+        run: |
+          ls -lh build/appicon.png || echo "missing master"
+          rm -f build/windows/icon.ico build/darwin/iconfile.icns build/darwin/iconfile.png
+          echo "cleared derived icons — next build regenerates"
+
+      - name: Build macOS universal app
+        run: wails build -platform darwin/universal -clean
+
+      - name: Create macOS zip
+        run: |
+          ditto -c -k --keepParent build/bin/sqlancy.app sqlancy-macos-universal.zip
+          ls -lh *.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-artifacts
+          path: sqlancy-macos-universal.zip
+          if-no-files-found: error
+
+  release:
+    name: Create GitHub Release
+    needs: [build-linux, build-windows, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+          merge-multiple: true
+
+      - name: List artifacts
+        run: ls -R ./artifacts
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ./artifacts/*.deb
+            ./artifacts/*.tar.gz
+            ./artifacts/*.zip
+            ./artifacts/*.exe
+          generate_release_notes: true
+          draft: false
+          prerelease: false
