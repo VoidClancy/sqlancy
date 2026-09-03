@@ -1,26 +1,25 @@
-## About
+# SQLancy
 
-Wails template which includes: Vite, React, TS, TailwindCSS out of the box.
+A minimal, fast SQLite browser built with Wails, Go and React.
 
-Build with `Wails CLI v2.0.0`.
+Open a `.db` / `.sqlite` file, browse tables, view paginated rows, filter and sort, and run SQL queries in an embedded editor.
 
-To use this [template](https://wails.io/docs/community/templates):
-```shell
-wails init -n "Your Project Name" -t https://github.com/hotafrika/wails-vite-react-ts-tailwind-template
-cd frontend/src
-npm install
-```
+## Features
 
-[Here](scripts) you can find useful scripts for building on different platforms and Wails CLI installation.
+- Open SQLite files via file dialog or recent list
+- Table list with row counts and schema info
+- Paginated table view with cursor-based navigation
+- Filter and sort per table
+- SQL editor powered by CodeMirror with syntax highlighting
+- Query execution with tabular results
+- Recent databases persisted locally
+- Pure Go SQLite driver (`modernc.org/sqlite`), no CGO required
 
-## Live Development
+## Installation
 
-To run in live development mode, run `wails dev` in the project directory. In another terminal, go into the `frontend`
-directory and run `npm run dev`. The frontend dev server will run on http://localhost:34115. Connect to this in your
-browser and connect to your application.
+Download from [Releases](https://github.com/voidclancy/sqlancy/releases):
 
-## Building
-
-To build a redistributable, production mode package, use `wails build`.
-
+- Linux: `sqlancy_<version>_amd64.deb` or `sqlancy-linux-amd64.tar.gz` (single binary `sqlancy`)
+- Windows: `sqlancy-windows-amd64.exe` (portable)
+- macOS: `sqlancy-macos-universal.zip` (contains `sqlancy.app`)
 
