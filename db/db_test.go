@@ -210,7 +210,7 @@ func TestPaginationNoPK(t *testing.T) {
 	var cursor Cursor
 
 	for page := 0; ; page++ {
-		res, err := d.GetTableRows("logs", cursor, 2, nil)
+		res, err := d.GetTableRows("logs", cursor, 2, nil, nil)
 		if err != nil {
 			t.Fatalf("page %d: %v", page, err)
 		}
@@ -252,7 +252,7 @@ func TestPaginationSinglePK(t *testing.T) {
 	var cursor Cursor
 
 	for page := 0; ; page++ {
-		res, err := d.GetTableRows("users", cursor, 2, nil)
+		res, err := d.GetTableRows("users", cursor, 2, nil, nil)
 		if err != nil {
 			t.Fatalf("page %d: %v", page, err)
 		}
@@ -280,7 +280,7 @@ func TestPaginationCompositePK(t *testing.T) {
 	var cursor Cursor
 
 	for page := 0; ; page++ {
-		res, err := d.GetTableRows("order_items", cursor, 2, nil)
+		res, err := d.GetTableRows("order_items", cursor, 2, nil, nil)
 		if err != nil {
 			t.Fatalf("page %d: %v", page, err)
 		}
@@ -310,7 +310,7 @@ func TestPaginationCompositePK(t *testing.T) {
 func TestPaginationWithoutRowID(t *testing.T) {
 	d := testDB(t)
 
-	p1, err := d.GetTableRows("inventory", nil, 2, nil)
+	p1, err := d.GetTableRows("inventory", nil, 2, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -318,7 +318,7 @@ func TestPaginationWithoutRowID(t *testing.T) {
 		t.Fatalf("p1: got %d rows, hasMore=%v", len(p1.Rows), p1.HasMore)
 	}
 
-	p2, err := d.GetTableRows("inventory", p1.NextCursor, 2, nil)
+	p2, err := d.GetTableRows("inventory", p1.NextCursor, 2, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -332,7 +332,7 @@ func TestPaginationWithoutRowID(t *testing.T) {
 func TestPaginationEmptyTable(t *testing.T) {
 	d := testDB(t)
 
-	res, err := d.GetTableRows("empty_tbl", nil, 50, nil)
+	res, err := d.GetTableRows("empty_tbl", nil, 50, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -350,7 +350,7 @@ func TestPaginationEmptyTable(t *testing.T) {
 func TestPaginationSingleRow(t *testing.T) {
 	d := testDB(t)
 
-	res, err := d.GetTableRows("solo", nil, 10, nil)
+	res, err := d.GetTableRows("solo", nil, 10, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -366,7 +366,7 @@ func TestPaginationLimitExactMatch(t *testing.T) {
 	d := testDB(t)
 
 	// 5 rows with limit=5 → no HasMore
-	res, err := d.GetTableRows("logs", nil, 5, nil)
+	res, err := d.GetTableRows("logs", nil, 5, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -382,7 +382,7 @@ func TestPaginationDefaultLimit(t *testing.T) {
 	d := testDB(t)
 
 	// limit <= 0 should default to 100
-	res, err := d.GetTableRows("logs", nil, 0, nil)
+	res, err := d.GetTableRows("logs", nil, 0, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -395,11 +395,11 @@ func TestPaginationNilCursorIgnored(t *testing.T) {
 	d := testDB(t)
 
 	// nil cursor and cursor with nil value should both start from beginning
-	r1, err := d.GetTableRows("users", nil, 10, nil)
+	r1, err := d.GetTableRows("users", nil, 10, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	r2, err := d.GetTableRows("users", Cursor{"id": nil}, 10, nil)
+	r2, err := d.GetTableRows("users", Cursor{"id": nil}, 10, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -412,7 +412,7 @@ func TestPaginationSpecialColumnNames(t *testing.T) {
 	d := testDB(t)
 
 	// table with reserved-word columns still paginates with rowid fallback
-	res, err := d.GetTableRows("weird cols", nil, 10, nil)
+	res, err := d.GetTableRows("weird cols", nil, 10, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -426,7 +426,7 @@ func TestPaginationSpecialColumnNames(t *testing.T) {
 func TestPaginationNullValues(t *testing.T) {
 	d := testDB(t)
 
-	res, err := d.GetTableRows("mixed", nil, 10, nil)
+	res, err := d.GetTableRows("mixed", nil, 10, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -746,5 +746,83 @@ func TestOpenDBInvalidPath(t *testing.T) {
 	err := d.OpenDB("/nonexistent/path/to/db.sqlite")
 	if err == nil {
 		t.Error("expected error for invalid path")
+	}
+}
+
+// --- Sorting Tests ---
+
+func TestGetSortedTableRowsASC(t *testing.T) {
+	d := testDB(t)
+
+	res, err := d.GetSortedTableRows("users", nil, 10, SortBy{Column: "name", Order: "ASC"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(res.Rows) != 4 {
+		t.Fatalf("expected 4 rows, got %d", len(res.Rows))
+	}
+
+	// Names should be: Alice, Bob, Charlie, David
+	firstRowName := res.Rows[0][1]
+	if firstRowName != "Alice" {
+		t.Errorf("expected first row name 'Alice', got %v", firstRowName)
+	}
+
+	lastRowName := res.Rows[3][1]
+	if lastRowName != "David" {
+		t.Errorf("expected last row name 'David', got %v", lastRowName)
+	}
+}
+
+func TestGetSortedTableRowsDESC(t *testing.T) {
+	d := testDB(t)
+
+	res, err := d.GetSortedTableRows("users", nil, 10, SortBy{Column: "name", Order: "DESC"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(res.Rows) != 4 {
+		t.Fatalf("expected 4 rows, got %d", len(res.Rows))
+	}
+
+	// Names should be: David, Charlie, Bob, Alice
+	firstRowName := res.Rows[0][1]
+	if firstRowName != "David" {
+		t.Errorf("expected first row name 'David', got %v", firstRowName)
+	}
+}
+
+func TestGetSortedTableRowsInvalidColumn(t *testing.T) {
+	d := testDB(t)
+
+	_, err := d.GetSortedTableRows("users", nil, 10, SortBy{Column: "nonexistent_col", Order: "ASC"})
+	if err == nil {
+		t.Error("expected error for invalid sort column")
+	}
+}
+
+func TestGetFilteredAndSortedTableRows(t *testing.T) {
+	d := testDB(t)
+
+	filter := Filter{Column: "level", Operator: "=", Value: "info"}
+	sort := SortBy{Column: "message", Order: "DESC"}
+
+	res, err := d.GetFilteredAndSortedTableRows("logs", nil, 10, filter, sort)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// logs with level='info' are message='a' and message='d'
+	if len(res.Rows) != 2 {
+		t.Fatalf("expected 2 info logs, got %d", len(res.Rows))
+	}
+
+	// Descending message order: 'd' first, 'a' second
+	// Columns returned to user: col 0 is level, col 1 is message
+	firstMsg := res.Rows[0][1]
+	if firstMsg != "d" {
+		t.Errorf("expected first filtered log message 'd', got %v", firstMsg)
 	}
 }

@@ -82,7 +82,7 @@ func (a *App) GetTableRows(tableName string, cursor db.Cursor, limit int) (*db.T
 	if !a.dbConnected() {
 		return nil, fmt.Errorf("no database opened")
 	}
-	return a.DB.GetTableRows(tableName, cursor, limit, nil)
+	return a.DB.GetTableRows(tableName, cursor, limit, nil, nil)
 }
 
 func (a *App) GetFilteredTableRows(tableName string, cursor db.Cursor, limit int, filter db.Filter) (*db.TableRows, error) {
@@ -90,6 +90,20 @@ func (a *App) GetFilteredTableRows(tableName string, cursor db.Cursor, limit int
 		return nil, fmt.Errorf("no database opened")
 	}
 	return a.DB.GetFilteredTableRows(tableName, cursor, limit, filter)
+}
+
+func (a *App) GetSortedTableRows(tableName string, cursor db.Cursor, limit int, sort db.SortBy) (*db.TableRows, error) {
+	if !a.dbConnected() {
+		return nil, fmt.Errorf("no database opened")
+	}
+	return a.DB.GetSortedTableRows(tableName, cursor, limit, sort)
+}
+
+func (a *App) GetFilteredAndSortedTableRows(tableName string, cursor db.Cursor, limit int, filter db.Filter, sort db.SortBy) (*db.TableRows, error) {
+	if !a.dbConnected() {
+		return nil, fmt.Errorf("no database opened")
+	}
+	return a.DB.GetFilteredAndSortedTableRows(tableName, cursor, limit, filter, sort)
 }
 
 func (a *App) ExecuteQuery(query string) (*db.QueryResult, error) {
