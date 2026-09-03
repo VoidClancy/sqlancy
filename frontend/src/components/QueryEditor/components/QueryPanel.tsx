@@ -8,7 +8,6 @@ import { useCallback, useEffect, useRef } from "react";
 interface QueryPanelProps {
     queryText: string;
     setQueryText: (text: string) => void;
-    handleKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
 }
 
 function sqlLinter(view: EditorView): Diagnostic[] {
@@ -91,11 +90,7 @@ function sqlLinter(view: EditorView): Diagnostic[] {
     return diagnostics;
 }
 
-export function QueryPanel({
-    queryText,
-    setQueryText,
-    handleKeyDown,
-}: QueryPanelProps) {
+export function QueryPanel({ queryText, setQueryText }: QueryPanelProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const editorRef = useRef<HTMLDivElement>(null);
     const viewRef = useRef<EditorView | null>(null);
@@ -121,16 +116,7 @@ export function QueryPanel({
                         setQueryText(update.state.doc.toString());
                     }
                 }),
-                EditorView.domEventHandlers({
-                    keydown: (e) => {
-                        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-                            e.preventDefault();
-                            handleKeyDown(
-                                e as unknown as React.KeyboardEvent<HTMLTextAreaElement>,
-                            );
-                        }
-                    },
-                }),
+
                 EditorView.theme({
                     "&": {
                         height: "100%",

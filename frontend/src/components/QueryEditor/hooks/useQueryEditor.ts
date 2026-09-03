@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { executeQuery, QueryResult } from "../../../lib";
 import { useDbStore } from "../../../store/useDbStore";
 import { ActiveTab } from "../types/ActiveTab";
+import { useShortcut } from "../../../hooks/useShortcuts";
 
 export function useQueryEditor() {
     const [queryText, setQueryText] = useState("SELECT * FROM sqlite_master;");
@@ -11,6 +12,24 @@ export function useQueryEditor() {
     const [activeTab, setActiveTab] = useState<ActiveTab>("results");
     const [copied, setCopied] = useState(false);
     const { refreshTables } = useDbStore();
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (
+                (event.ctrlKey || event.metaKey) &&
+                event.key.toLowerCase() === "enter"
+            ) {
+                event.preventDefault();
+
+                runQuery();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
 
     const runQuery = async () => {
         const sqlQuery = queryText.trim();
@@ -35,13 +54,7 @@ export function useQueryEditor() {
             setExecuting(false);
         }
     };
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-            e.preventDefault();
-            runQuery();
-        }
-    };
+    useShortcut("Enter", runQuery);
 
     const copySQL = () => {
         navigator.clipboard.writeText(queryText);
@@ -60,6 +73,5 @@ export function useQueryEditor() {
         copied,
         copySQL,
         runQuery,
-        handleKeyDown,
     };
 }

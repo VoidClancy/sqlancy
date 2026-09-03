@@ -20,7 +20,6 @@ export default function QueryEditorView() {
         copied,
         copySQL,
         runQuery,
-        handleKeyDown,
     } = useQueryEditor();
 
     const showEmptyResults = !result || !result.isSelect;
@@ -35,11 +34,7 @@ export default function QueryEditorView() {
                 onRun={runQuery}
             />
 
-            <QueryPanel
-                queryText={queryText}
-                setQueryText={setQueryText}
-                handleKeyDown={handleKeyDown}
-            />
+            <QueryPanel queryText={queryText} setQueryText={setQueryText} />
 
             <ResultsBar
                 activeTab={activeTab}

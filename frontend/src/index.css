@@ -3,158 +3,196 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    /* ===== Base Layout ===== */
+    :root {
+        /* ===== Base Layout ===== */
 
-    --bg-main: #F7F8FA;
-    --bg-page: #FFFFFF;
+        --bg-main: #F7F8FA;
+        --bg-page: #FFFFFF;
 
-    /* ===== Elevated Elements ===== */
+        /* ===== Elevated Elements ===== */
 
-    --bg-surface: #FFFFFF;
-    --bg-surface-elevated: #FFFFFF;
-    --bg-surface-overlay: #FFFFFF;
+        --bg-surface: #FFFFFF;
+        --bg-surface-elevated: #FFFFFF;
+        --bg-surface-overlay: #FFFFFF;
 
-    /* ===== Interaction ===== */
+        /* ===== Interaction ===== */
 
-    --action-accent: #7C3AED;
-    --action-accent-hover: #6D28D9;
-    --action-accent-active: #5B21B6;
-    --action-text: #FFFFFF;
-    --action-disabled: #E4E4E7;
+        --action-accent: #7C3AED;
+        --action-accent-hover: #6D28D9;
+        --action-accent-active: #5B21B6;
+        --action-text: #FFFFFF;
+        --action-disabled: #E4E4E7;
 
-    /* ===== Semantic ===== */
+        /* ===== Semantic ===== */
 
-    --success-main: #16A34A;
-    --success-bg: #F0FDF4;
+        --success-main: #16A34A;
+        --success-bg: #F0FDF4;
 
-    --warning-main: #D97706;
-    --warning-bg: #FFFBEB;
+        --warning-main: #D97706;
+        --warning-bg: #FFFBEB;
 
-    --error-main: #DC2626;
-    --error-bg: #FEF2F2;
+        --error-main: #DC2626;
+        --error-bg: #FEF2F2;
 
-    --info-main: #2563EB;
-    --info-bg: #EFF6FF;
+        --info-main: #2563EB;
+        --info-bg: #EFF6FF;
 
-    /* ===== Typography ===== */
+        /* ===== Typography ===== */
 
-    --text-primary: #18181B;
-    --text-secondary: #52525B;
-    --text-3rd: #A1A1AA;
-    --text-disabled: #D4D4D8;
+        --text-primary: #18181B;
+        --text-secondary: #3F3F46;
+        --text-3rd: #71717A;
+        --text-disabled: #A1A1AA;
 
-    /* ===== Framing ===== */
+        /* ===== Framing ===== */
 
-    --border-subtle: #E4E4E7;
-    --border-strong: #D4D4D8;
-  }
+        --border-subtle: #E4E4E7;
+        --border-strong: #D4D4D8;
+    }
 
-  .dark {
-    /* ===== Base Layout ===== */
+    .dark {
+        /* ===== Base Layout ===== */
 
-    --bg-main: #09090B;
-    --bg-page: #111113;
+        --bg-main: #09090B;
+        --bg-page: #111113;
 
-    /* ===== Elevated Elements ===== */
+        /* ===== Elevated Elements ===== */
 
-    --bg-surface: #18181B;
-    --bg-surface-elevated: #27272A;
-    --bg-surface-overlay: #3F3F46;
+        --bg-surface: #18181B;
+        --bg-surface-elevated: #27272A;
+        --bg-surface-overlay: #3F3F46;
 
-    /* ===== Interaction ===== */
+        /* ===== Interaction ===== */
 
-    --action-accent: #8B5CF6;
-    --action-accent-hover: #A78BFA;
-    --action-accent-active: #7C3AED;
-    --action-text: #FFFFFF;
-    --action-disabled: #27272A;
+        --action-accent: #8B5CF6;
+        --action-accent-hover: #A78BFA;
+        --action-accent-active: #7C3AED;
+        --action-text: #FFFFFF;
+        --action-disabled: #27272A;
 
-    /* ===== Semantic ===== */
+        /* ===== Semantic ===== */
 
-    --success-main: #22C55E;
-    --success-bg: #102218;
+        --success-main: #22C55E;
+        --success-bg: #102218;
 
-    --warning-main: #F59E0B;
-    --warning-bg: #241B0A;
+        --warning-main: #F59E0B;
+        --warning-bg: #241B0A;
 
-    --error-main: #F87171;
-    --error-bg: #251214;
+        --error-main: #F87171;
+        --error-bg: #251214;
 
-    --info-main: #60A5FA;
-    --info-bg: #101C30;
+        --info-main: #60A5FA;
+        --info-bg: #101C30;
 
-    /* ===== Typography ===== */
+        /* ===== Typography ===== */
 
-    --text-primary: #FAFAFA;
-    --text-secondary: #A1A1AA;
-    --text-3rd: #71717A;
-    --text-disabled: #52525B;
+        --text-primary: #FAFAFA;
+        --text-secondary: #D4D4D8;
+        --text-3rd: #A1A1AA;
+        --text-disabled: #71717A;
 
-    /* ===== Framing ===== */
+        /* ===== Framing ===== */
 
-    --border-subtle: #27272A;
-    --border-strong: #3F3F46;
-  }
+        --border-subtle: #27272A;
+        --border-strong: #3F3F46;
+    }
 
-  body {
-    background-color: var(--bg-main);
-    color: var(--text-primary);
-  }
+    body {
+        background-color: var(--bg-main);
+        color: var(--text-primary);
+    }
 }
 
-/* Modal & Toast Animations */
+/* ===== Modal & Toast Animations ===== */
 
 @keyframes overlayFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes overlayFadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
 }
 
 @keyframes modalScaleIn {
-  from { opacity: 0; transform: scale(0.94) translateY(6px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+    from {
+        opacity: 0;
+        transform: scale(0.94) translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 @keyframes modalScaleOut {
-  from { opacity: 1; transform: scale(1) translateY(0); }
-  to { opacity: 0; transform: scale(0.94) translateY(6px); }
+    from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(0.94) translateY(6px);
+    }
 }
 
 @keyframes toastSlideIn {
-  from { opacity: 0; transform: translateY(16px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+    from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 @keyframes toastSlideOut {
-  from { opacity: 1; transform: translateY(0) scale(1); }
-  to { opacity: 0; transform: translateY(12px) scale(0.96); }
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(12px) scale(0.96);
+    }
 }
 
 .animate-overlay-in {
-  animation: overlayFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: overlayFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-overlay-out {
-  animation: overlayFadeOut 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: overlayFadeOut 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-modal-in {
-  animation: modalScaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: modalScaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-modal-out {
-  animation: modalScaleOut 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: modalScaleOut 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-toast-in {
-  animation: toastSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: toastSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-toast-out {
-  animation: toastSlideOut 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: toastSlideOut 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

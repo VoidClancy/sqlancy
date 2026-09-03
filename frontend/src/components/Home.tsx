@@ -1,40 +1,24 @@
 import { Loader2, FolderOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDbStore } from "../store/useDbStore";
-
-const CAPABILITIES = [
-    "cursor pagination",
-    "composite primary keys",
-    "WITHOUT ROWID",
-    "rowid fallback",
-
-    "SQL editor",
-];
+import { useDb } from "../hooks/useDb";
 
 export default function HomeView() {
-    const navigate = useNavigate();
-    const { openDatabase, loading } = useDbStore();
+    const { loading } = useDbStore();
 
-    const handleOpenDB = async () => {
-        try {
-            const tbls = await openDatabase();
-            if (tbls === null) return;
-            if (tbls.length > 0) {
-                navigate(`/tables/${tbls[0]}`);
-            }
-        } catch (err) {
-            console.error("Failed to open DB:", err);
-        }
-    };
+    const { handleOpenDB } = useDb();
 
     return (
         <div className="flex h-full w-full flex-col items-center justify-center bg-page select-none overflow-auto">
             <div className="flex flex-col items-center gap-8 px-8 max-w-sm w-full">
                 <div className="text-center">
                     <h1 className="font-mono text-3xl font-bold tracking-tight text-primary leading-none">
-                        sqlite
-                        <span className="text-secondary"> browser</span>
+                        SQL
+                        <span className="text-secondary">ancy</span>
                     </h1>
+                    <p className="mt-2 text-sm text-3rd">
+                        A simple, minimal Sqlite browser.
+                    </p>
                 </div>
 
                 <button
@@ -62,26 +46,8 @@ export default function HomeView() {
                 </button>
 
                 <p className="text-[11px] text-3rd text-center">
-                    or pick a table from the sidebar
+                    or pick one from recents.
                 </p>
-
-                <div className="w-full pt-4 border-t border-subtle">
-                    <ul className="flex flex-wrap justify-center gap-x-3 gap-y-1.5">
-                        {CAPABILITIES.map((cap, i) => (
-                            <li
-                                key={cap}
-                                className="flex items-center gap-1.5 text-[10px] font-mono text-3rd"
-                            >
-                                {i > 0 && (
-                                    <span className="text-subtle select-none">
-                                        ·
-                                    </span>
-                                )}
-                                {cap}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
             </div>
         </div>
     );

@@ -6,6 +6,11 @@ import React, {
     useEffect,
 } from "react";
 import { Toaster } from "react-hot-toast";
+import { useDb } from "../hooks/useDb";
+import {
+    registerGlobalShortcuts,
+    useGlobalShortcuts,
+} from "../hooks/useShortcuts";
 
 export type LayoutContextValue = {
     sidebarOpen: boolean;
@@ -29,11 +34,21 @@ type AppLayoutProps = {
 
 export default function AppLayout({ children }: AppLayoutProps) {
     const [sidebarOpen, setSidebarOpen] = useState(true);
+
+    const { handleOpenDB } = useDb();
     const [isDark, setIsDark] = useState(() => {
         const saved = localStorage.getItem("theme");
         if (saved) return saved === "dark";
         return window.matchMedia("(prefers-color-scheme: dark)").matches;
     });
+
+    useGlobalShortcuts();
+    registerGlobalShortcuts([
+        {
+            key: "o",
+            handler: handleOpenDB,
+        },
+    ]);
 
     const toggleSidebar = useCallback(() => setSidebarOpen((v) => !v), []);
 

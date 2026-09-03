@@ -2,27 +2,15 @@ import { useNavigate } from "react-router-dom";
 import { useDbStore } from "../../../store/useDbStore";
 import { Loader2, Plus, FileText } from "lucide-react";
 import { useLayout } from "../../../context/AppLayout";
+import { useDb } from "../../../hooks/useDb";
 
 export default function ActionRow() {
     const navigate = useNavigate();
     const { sidebarOpen } = useLayout();
     const collapsed = !sidebarOpen;
-    const { openDatabase, loading } = useDbStore();
+    const { loading } = useDbStore();
 
-    const handleOpenDB = async () => {
-        try {
-            const tbls = await openDatabase();
-            if (tbls === null) return;
-
-            if (tbls.length > 0) {
-                navigate(`/tables/${tbls[0]}`);
-            } else {
-                navigate("/");
-            }
-        } catch (err) {
-            console.error("Failed to open database:", err);
-        }
-    };
+    const { handleOpenDB } = useDb();
 
     return (
         <div className="shrink-0">
