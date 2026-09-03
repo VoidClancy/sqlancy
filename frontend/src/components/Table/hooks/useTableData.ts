@@ -5,7 +5,9 @@ import {
     TableInfo,
     ColumnInfo,
     Filter,
+    SortBy,
 } from "../../../lib";
+import { db } from "../../../../wailsjs/go/models";
 
 export interface TableState {
     tableInfo: TableInfo | null;
@@ -14,6 +16,7 @@ export interface TableState {
     nextCursor: Record<string, any> | null;
     hasMore: boolean;
     activeFilter: Filter | null;
+    sortBy: SortBy | null;
 }
 
 export function useTableData(tableName: string) {
@@ -24,6 +27,7 @@ export function useTableData(tableName: string) {
         nextCursor: null,
         hasMore: false,
         activeFilter: null,
+        sortBy: null,
     });
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -40,6 +44,7 @@ export function useTableData(tableName: string) {
             nextCursor: null,
             hasMore: false,
             activeFilter: null,
+            sortBy: null,
         });
 
         try {
@@ -54,6 +59,7 @@ export function useTableData(tableName: string) {
                 nextCursor: result.nextCursor || null,
                 hasMore: result.hasMore || false,
                 activeFilter: null,
+                sortBy: null,
             });
         } catch (err: any) {
             setError(err?.message || String(err));
@@ -72,6 +78,7 @@ export function useTableData(tableName: string) {
                     null,
                     100,
                     filter || undefined,
+                    state.sortBy || undefined,
                 );
                 setState((prev) => ({
                     ...prev,
@@ -86,7 +93,51 @@ export function useTableData(tableName: string) {
                 setLoading(false);
             }
         },
-        [tableName],
+        [tableName, state.sortBy],
+    );
+
+    const toggleSort = useCallback(
+        async (columnName: string) => {
+            setLoading(true);
+            setError(null);
+
+            let nextSort: SortBy | null = null;
+            if (!state.sortBy || state.sortBy.column !== columnName) {
+                nextSort = db.SortBy.createFrom({
+                    column: columnName,
+                    order: "ASC",
+                });
+            } else if (state.sortBy.order === "ASC") {
+                nextSort = db.SortBy.createFrom({
+                    column: columnName,
+                    order: "DESC",
+                });
+            } else {
+                nextSort = null;
+            }
+
+            try {
+                const result = await getTableRows(
+                    tableName,
+                    null,
+                    100,
+                    state.activeFilter || undefined,
+                    nextSort || undefined,
+                );
+                setState((prev) => ({
+                    ...prev,
+                    rows: result.rows || [],
+                    nextCursor: result.nextCursor || null,
+                    hasMore: result.hasMore || false,
+                    sortBy: nextSort,
+                }));
+            } catch (err: any) {
+                setError(err?.message || String(err));
+            } finally {
+                setLoading(false);
+            }
+        },
+        [tableName, state.sortBy, state.activeFilter],
     );
 
     const loadMore = useCallback(async () => {
@@ -98,6 +149,7 @@ export function useTableData(tableName: string) {
                 state.nextCursor,
                 100,
                 state.activeFilter || undefined,
+                state.sortBy || undefined,
             );
             setState((prev) => ({
                 ...prev,
@@ -110,7 +162,7 @@ export function useTableData(tableName: string) {
         } finally {
             setLoadingMore(false);
         }
-    }, [tableName, state.nextCursor, state.hasMore, state.activeFilter, loadingMore]);
+    }, [tableName, state.nextCursor, state.hasMore, state.activeFilter, state.sortBy, loadingMore]);
 
     useEffect(() => {
         loadInitial();
@@ -145,5 +197,6 @@ export function useTableData(tableName: string) {
         loadInitial,
         loadMore,
         applyFilter,
+        toggleSort,
     };
 }

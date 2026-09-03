@@ -25,6 +25,7 @@ export default function Table() {
         loadingMore,
         error,
         activeFilter,
+        sortBy,
         searchTerm,
         setSearchTerm,
         filteredRows,
@@ -32,6 +33,7 @@ export default function Table() {
         loadInitial,
         loadMore,
         applyFilter,
+        toggleSort,
     } = useTableData(tableName);
 
     return (
@@ -75,6 +77,8 @@ export default function Table() {
                         filteredRows={filteredRows}
                         pkSet={pkSet}
                         searchTerm={searchTerm}
+                        sortBy={sortBy}
+                        onSort={toggleSort}
                     />
                 )}
             </div>

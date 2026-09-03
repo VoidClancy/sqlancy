@@ -7,3 +7,4 @@ export type QueryResult = db.QueryResult;
 export type RecentDB = db.RecentDB;
 export type Cursor = Record<string, any>;
 export type Filter = db.Filter;
+export type SortBy = db.SortBy;

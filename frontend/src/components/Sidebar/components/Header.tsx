@@ -16,7 +16,7 @@ export default function SidebarHeader() {
                     <div className="flex items-center gap-2.5 min-w-0">
                         <Database size={18} className="text-action shrink-0" />
                         <span className="text-sm font-semibold leading-none text-primary truncate">
-                            SQLite Browser
+                            SQLancy
                         </span>
                     </div>
 

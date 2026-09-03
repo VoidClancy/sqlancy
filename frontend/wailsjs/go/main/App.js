@@ -14,12 +14,20 @@ export function ExecuteQuery(arg1) {
   return window['go']['main']['App']['ExecuteQuery'](arg1);
 }
 
+export function GetFilteredAndSortedTableRows(arg1, arg2, arg3, arg4, arg5) {
+  return window['go']['main']['App']['GetFilteredAndSortedTableRows'](arg1, arg2, arg3, arg4, arg5);
+}
+
 export function GetFilteredTableRows(arg1, arg2, arg3, arg4) {
   return window['go']['main']['App']['GetFilteredTableRows'](arg1, arg2, arg3, arg4);
 }
 
 export function GetRecentDBs() {
   return window['go']['main']['App']['GetRecentDBs']();
+}
+
+export function GetSortedTableRows(arg1, arg2, arg3, arg4) {
+  return window['go']['main']['App']['GetSortedTableRows'](arg1, arg2, arg3, arg4);
 }
 
 export function GetTableInfo(arg1) {

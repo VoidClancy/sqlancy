@@ -86,6 +86,20 @@ export namespace db {
 	        this.path = source["path"];
 	    }
 	}
+	export class SortBy {
+	    column: string;
+	    order: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new SortBy(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.column = source["column"];
+	        this.order = source["order"];
+	    }
+	}
 	export class TableInfo {
 	    name: string;
 	    columns: ColumnInfo[];

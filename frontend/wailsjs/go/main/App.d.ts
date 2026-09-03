@@ -8,9 +8,13 @@ export function Close():Promise<void>;
 
 export function ExecuteQuery(arg1:string):Promise<db.QueryResult>;
 
+export function GetFilteredAndSortedTableRows(arg1:string,arg2:db.Cursor,arg3:number,arg4:db.Filter,arg5:db.SortBy):Promise<db.TableRows>;
+
 export function GetFilteredTableRows(arg1:string,arg2:db.Cursor,arg3:number,arg4:db.Filter):Promise<db.TableRows>;
 
 export function GetRecentDBs():Promise<Array<db.RecentDB>>;
+
+export function GetSortedTableRows(arg1:string,arg2:db.Cursor,arg3:number,arg4:db.SortBy):Promise<db.TableRows>;
 
 export function GetTableInfo(arg1:string):Promise<db.TableInfo>;
 

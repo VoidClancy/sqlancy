@@ -5,9 +5,11 @@ import {
     GetTableInfo,
     GetTableRows,
     GetFilteredTableRows,
+    GetSortedTableRows,
+    GetFilteredAndSortedTableRows,
 } from "../../wailsjs/go/main/App";
 import { db } from "../../wailsjs/go/models";
-import { Filter, TableInfo, TableRows } from "./types";
+import { Filter, SortBy, TableInfo, TableRows } from "./types";
 
 const isWailsAvailable = (): boolean => {
     return (
@@ -59,6 +61,7 @@ export const getTableRows = async (
     cursor: Record<string, any> | null,
     limit: number,
     filter?: Filter,
+    sort?: SortBy,
 ): Promise<TableRows> => {
     if (!isWailsAvailable()) {
         return db.TableRows.createFrom({
@@ -69,12 +72,34 @@ export const getTableRows = async (
         });
     }
 
-    if (filter && filter.column) {
+    const hasFilter = Boolean(filter && filter.column);
+    const hasSort = Boolean(sort && sort.column);
+
+    if (hasFilter && hasSort) {
+        return await GetFilteredAndSortedTableRows(
+            tableName,
+            cursor || {},
+            limit,
+            filter!,
+            sort!,
+        );
+    }
+
+    if (hasFilter) {
         return await GetFilteredTableRows(
             tableName,
             cursor || {},
             limit,
-            filter,
+            filter!,
+        );
+    }
+
+    if (hasSort) {
+        return await GetSortedTableRows(
+            tableName,
+            cursor || {},
+            limit,
+            sort!,
         );
     }
 

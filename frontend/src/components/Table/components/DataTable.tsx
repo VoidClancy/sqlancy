@@ -1,11 +1,13 @@
-import { Key } from "lucide-react";
-import { ColumnInfo } from "../../../lib";
+import { Key, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import { ColumnInfo, SortBy } from "../../../lib";
 
 interface DataTableProps {
     columns: ColumnInfo[];
     filteredRows: any[][];
     pkSet: Set<string>;
     searchTerm: string;
+    sortBy?: SortBy | null;
+    onSort?: (columnName: string) => void;
 }
 
 export function DataTable({
@@ -13,6 +15,8 @@ export function DataTable({
     filteredRows,
     pkSet,
     searchTerm,
+    sortBy,
+    onSort,
 }: DataTableProps) {
     return (
         <div className="inline-block min-w-full align-middle">
@@ -22,27 +26,55 @@ export function DataTable({
                         <th className="w-12 px-3 py-2.5 text-center text-[11px] font-semibold text-3rd border-b border-subtle bg-surface">
                             #
                         </th>
-                        {columns.map((col) => (
-                            <th
-                                key={col.name}
-                                className="px-3.5 py-2.5 text-left text-[11px] font-semibold text-primary border-b border-subtle bg-surface select-none"
-                            >
-                                <div className="flex items-center gap-1.5">
-                                    {pkSet.has(col.name) && (
-                                        <Key
-                                            size={11}
-                                            className="text-blue-500 shrink-0"
-                                        />
-                                    )}
-                                    <span className="font-mono text-xs text-primary">
-                                        {col.name}
-                                    </span>
-                                    <span className="text-[10px] text-3rd uppercase font-normal font-mono">
-                                        {col.type || "ANY"}
-                                    </span>
-                                </div>
-                            </th>
-                        ))}
+                        {columns.map((col) => {
+                            const isSorted = sortBy?.column === col.name;
+                            const sortOrder = isSorted ? sortBy?.order : null;
+
+                            return (
+                                <th
+                                    key={col.name}
+                                    onClick={() => onSort?.(col.name)}
+                                    title={`Click to sort by ${col.name}`}
+                                    className="group px-3.5 py-2.5 text-left text-[11px] font-semibold text-primary border-b border-subtle bg-surface select-none cursor-pointer hover:bg-main/60 transition-colors"
+                                >
+                                    <div className="flex items-center gap-1.5 min-w-0">
+                                        {pkSet.has(col.name) && (
+                                            <Key
+                                                size={11}
+                                                className="text-blue-500 shrink-0"
+                                            />
+                                        )}
+                                        <span className="font-mono text-xs text-primary truncate">
+                                            {col.name}
+                                        </span>
+                                        <span className="text-[10px] text-3rd uppercase font-normal font-mono shrink-0">
+                                            {col.type || "ANY"}
+                                        </span>
+
+                                        <div className="ml-auto flex items-center shrink-0">
+                                            {isSorted ? (
+                                                sortOrder === "ASC" ? (
+                                                    <ArrowUp
+                                                        size={12}
+                                                        className="text-action shrink-0"
+                                                    />
+                                                ) : (
+                                                    <ArrowDown
+                                                        size={12}
+                                                        className="text-action shrink-0"
+                                                    />
+                                                )
+                                            ) : (
+                                                <ArrowUpDown
+                                                    size={11}
+                                                    className="opacity-0 group-hover:opacity-40 text-3rd shrink-0 transition-opacity"
+                                                />
+                                            )}
+                                        </div>
+                                    </div>
+                                </th>
+                            );
+                        })}
                     </tr>
                 </thead>
 
